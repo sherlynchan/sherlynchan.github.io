@@ -108,24 +108,24 @@
 
 
 
-  <meta name="description" content="✨✨✨">
+  <meta name="description" content="Feb 2 2020 78. Subsets123456789class Solution:def subsets(self, nums: List[int]) -&amp;gt; List[List[int]]:res = []def backtracking(nums, path, i):res.append(path)for i in range(i, len(nums)):backtracking">
 <meta property="og:type" content="article">
-<meta property="og:title" content="leetcode[Python]">
-<meta property="og:url" content="http://yoursite.com/2020/02/03/leetcode-Python/index.html">
+<meta property="og:title" content="💻 Backtracking">
+<meta property="og:url" content="http://yoursite.com/2020/02/03/Backtracking/index.html">
 <meta property="og:site_name" content="Hi, I am Shaoling Chen">
-<meta property="og:description" content="✨✨✨">
+<meta property="og:description" content="Feb 2 2020 78. Subsets123456789class Solution:def subsets(self, nums: List[int]) -&amp;gt; List[List[int]]:res = []def backtracking(nums, path, i):res.append(path)for i in range(i, len(nums)):backtracking">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-02-03T14:42:49.895Z">
+<meta property="og:updated_time" content="2020-02-03T15:24:06.566Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="leetcode[Python]">
-<meta name="twitter:description" content="✨✨✨">
+<meta name="twitter:title" content="💻 Backtracking">
+<meta name="twitter:description" content="Feb 2 2020 78. Subsets123456789class Solution:def subsets(self, nums: List[int]) -&amp;gt; List[List[int]]:res = []def backtracking(nums, path, i):res.append(path)for i in range(i, len(nums)):backtracking">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2020/02/03/leetcode-Python/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/02/03/Backtracking/"/>
 
 
 
@@ -135,7 +135,7 @@
   };
 </script>
 
-  <title>leetcode[Python] | Hi, I am Shaoling Chen</title>
+  <title>💻 Backtracking | Hi, I am Shaoling Chen</title>
   
 
 
@@ -300,7 +300,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/03/leetcode-Python/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/03/Backtracking/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Shaoling Chen">
@@ -317,7 +317,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">leetcode[Python]
+          <h1 class="post-title" itemprop="name headline">💻 Backtracking
               
             
           </h1>
@@ -342,9 +342,13 @@
                 
               
 
-              <time title="Created: 2020-02-03 09:42:49" itemprop="dateCreated datePublished" datetime="2020-02-03T09:42:49-05:00">2020-02-03</time>
+              <time title="Created: 2020-02-03 10:18:21 / Modified: 10:24:06" itemprop="dateCreated datePublished" datetime="2020-02-03T10:18:21-05:00">2020-02-03</time>
             
 
+            
+              
+
+              
             
           </span>
 
@@ -376,7 +380,19 @@
       
 
       
-        
+        <p>Feb 2 2020</p>
+<h2 id="78-Subsets"><a href="#78-Subsets" class="headerlink" title="78. Subsets"></a><a href="https://leetcode.com/problems/subsets/" target="_blank" rel="noopener">78. Subsets</a></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">subsets</span><span class="params">(self, nums: List[int])</span> -&gt; List[List[int]]:</span></span><br><span class="line">res = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">backtracking</span><span class="params">(nums, path, i)</span>:</span></span><br><span class="line">res.append(path)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(i, len(nums)):</span><br><span class="line">backtracking(nums, path+[nums[i]], i+<span class="number">1</span>)</span><br><span class="line">backtracking(nums, [], <span class="number">0</span>)</span><br><span class="line"><span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+<p>Time Complexity:<br>Space Complexity:</p>
+<h2 id="46-Permutations"><a href="#46-Permutations" class="headerlink" title="46. Permutations"></a><a href="https://leetcode.com/problems/permutations/" target="_blank" rel="noopener">46. Permutations</a></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">permute</span><span class="params">(self, nums: List[int])</span> -&gt; List[List[int]]:</span></span><br><span class="line">res = []</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dfs</span><span class="params">(nums, path, res)</span>:</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> nums:</span><br><span class="line">res.append(path)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(nums)):</span><br><span class="line">dfs(nums[:i]+nums[i+<span class="number">1</span>:], path +[nums[i]], res)</span><br><span class="line">dfs(nums,[], res)    </span><br><span class="line"><span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+<p>Time Complexity:<br>Space Complexity:</p>
+<h2 id="1079-Letter-Tile-Possibilities"><a href="#1079-Letter-Tile-Possibilities" class="headerlink" title="1079. Letter Tile Possibilities"></a><a href="https://leetcode.com/problems/letter-tile-possibilities/" target="_blank" rel="noopener">1079. Letter Tile Possibilities</a></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">numTilePossibilities</span><span class="params">(self, tiles: str)</span> -&gt; int:</span></span><br><span class="line">res = set()</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">backtracking</span><span class="params">(tiles, path)</span>:</span></span><br><span class="line">res.add(path)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(tiles)):</span><br><span class="line">backtracking(tiles[:i]+tiles[i+<span class="number">1</span>:],path+tiles[i])</span><br><span class="line">backtracking(tiles, <span class="string">''</span>)</span><br><span class="line"><span class="keyword">return</span> len(res)<span class="number">-1</span></span><br></pre></td></tr></table></figure>
+<p>Time Complexity:<br>Space Complexity:</p>
+<p>Feb 3 2020</p>
+<h2 id="401-Binary-Watch"><a href="#401-Binary-Watch" class="headerlink" title="401. Binary Watch"></a><a href="https://leetcode.com/problems/binary-watch/" target="_blank" rel="noopener">401. Binary Watch</a></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br></pre></td></tr></table></figure>
+<p>Time Complexity:<br>Space Complexity:</p>
+<h2 id="784-Letter-Case-Permutation"><a href="#784-Letter-Case-Permutation" class="headerlink" title="784. Letter Case Permutation"></a><a href="https://leetcode.com/problems/letter-case-permutation/" target="_blank" rel="noopener">784. Letter Case Permutation</a></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">letterCasePermutation</span><span class="params">(self, S: str)</span> -&gt; List[str]:</span></span><br><span class="line">res = [<span class="string">''</span>]</span><br><span class="line"><span class="keyword">for</span> ch <span class="keyword">in</span> S:</span><br><span class="line"><span class="keyword">if</span> ch.isalpha():</span><br><span class="line">res = [i+j <span class="keyword">for</span> i <span class="keyword">in</span> res <span class="keyword">for</span> j <span class="keyword">in</span> [ch.upper(), ch.lower()]]</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">res = [i+ch <span class="keyword">for</span> i <span class="keyword">in</span> res]</span><br><span class="line"><span class="keyword">return</span> res</span><br></pre></td></tr></table></figure>
+<p>Time Complexity:<br>Space Complexity:</p>
+
       
     </div>
 
@@ -403,8 +419,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/03/Projects/" rel="next" title="💻 Projects">
-                <i class="fa fa-chevron-left"></i> 💻 Projects
+              <a href="/2019/03/03/Projects/" rel="next" title="📃 Projects">
+                <i class="fa fa-chevron-left"></i> 📃 Projects
               </a>
             
           </div>
@@ -456,8 +472,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -490,6 +515,8 @@
                 <div class="site-state-item site-state-tags">
                   <a href="/tags/index.html">
                     
+                    
+                      
                     
                       
                     
@@ -551,6 +578,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#78-Subsets"><span class="nav-number">1.</span> <span class="nav-text">78. Subsets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#46-Permutations"><span class="nav-number">2.</span> <span class="nav-text">46. Permutations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1079-Letter-Tile-Possibilities"><span class="nav-number">3.</span> <span class="nav-text">1079. Letter Tile Possibilities</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#401-Binary-Watch"><span class="nav-number">4.</span> <span class="nav-text">401. Binary Watch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#784-Letter-Case-Permutation"><span class="nav-number">5.</span> <span class="nav-text">784. Letter Case Permutation</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
