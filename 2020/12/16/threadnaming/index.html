@@ -108,18 +108,18 @@
 
 
 
-  <meta name="description" content="It’s always much more convenient to know the threads’ name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names in different platf">
+  <meta name="description" content="It’s always much more convenient to know the thread name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names properly in differen">
 <meta name="keywords" content="tech">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Naming Threads in C++">
+<meta property="og:title" content="💻 Naming Threads in C++">
 <meta property="og:url" content="http://yoursite.com/2020/12/16/threadnaming/index.html">
 <meta property="og:site_name" content="Afterwork">
-<meta property="og:description" content="It’s always much more convenient to know the threads’ name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names in different platf">
+<meta property="og:description" content="It’s always much more convenient to know the thread name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names properly in differen">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-12-17T00:17:59.797Z">
+<meta property="og:updated_time" content="2020-12-17T00:22:15.634Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Naming Threads in C++">
-<meta name="twitter:description" content="It’s always much more convenient to know the threads’ name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names in different platf">
+<meta name="twitter:title" content="💻 Naming Threads in C++">
+<meta name="twitter:description" content="It’s always much more convenient to know the thread name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names properly in differen">
 
 
 
@@ -136,7 +136,7 @@
   };
 </script>
 
-  <title>Naming Threads in C++ | Afterwork</title>
+  <title>💻 Naming Threads in C++ | Afterwork</title>
   
 
 
@@ -318,7 +318,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Naming Threads in C++
+          <h1 class="post-title" itemprop="name headline">💻 Naming Threads in C++
               
             
           </h1>
@@ -343,7 +343,7 @@
                 
               
 
-              <time title="Created: 2020-12-16 15:27:29 / Modified: 16:17:59" itemprop="dateCreated datePublished" datetime="2020-12-16T15:27:29-08:00">2020-12-16</time>
+              <time title="Created: 2020-12-16 15:27:29 / Modified: 16:22:15" itemprop="dateCreated datePublished" datetime="2020-12-16T15:27:29-08:00">2020-12-16</time>
             
 
             
@@ -381,7 +381,7 @@
       
 
       
-        <p>It’s always much more convenient to know the threads’ name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names in different platforms.</p>
+        <p>It’s always much more convenient to know the thread name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names properly in different platforms.</p>
 <h1 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h1><p>Use <a href="https://man7.org/linux/man-pages/man3/pthread_setname_np.3.html" target="_blank" rel="noopener">pthread</a> to name threads:</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line">pthread_setname_np(pthread_self(), name)</span><br><span class="line">pthread_setname_np(thread.native_handle(), name)</span><br></pre></td></tr></table></figure>
 <p>Note: Thread name length is restricted to 16 characters.</p>
@@ -429,8 +429,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/12/07/Books-2020-md/" rel="next" title="📖 Books of 2020 [en/ch]">
-                <i class="fa fa-chevron-left"></i> 📖 Books of 2020 [en/ch]
+              <a href="/2020/12/07/Books-2020-md/" rel="next" title="📖 Books of 2020">
+                <i class="fa fa-chevron-left"></i> 📖 Books of 2020
               </a>
             
           </div>
