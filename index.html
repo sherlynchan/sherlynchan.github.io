@@ -300,6 +300,160 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/16/threadnaming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ShaolingC">
+      <meta itemprop="description" content="✨✨✨">
+      <meta itemprop="image" content="/images/yoda-hiding.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Afterwork">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/12/16/threadnaming/" itemprop="url">
+                  Naming Threads in C++
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-12-16 15:27:29 / Modified: 16:17:59" itemprop="dateCreated datePublished" datetime="2020-12-16T15:27:29-08:00">2020-12-16</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>It’s always much more convenient to know the threads’ name than just the thread id, when debugging an application with multiple threads. This post introduces how to set thread names in different platforms.</p>
+<h1 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h1><p>Use <a href="https://man7.org/linux/man-pages/man3/pthread_setname_np.3.html" target="_blank" rel="noopener">pthread</a> to name threads:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line">pthread_setname_np(pthread_self(), name)</span><br><span class="line">pthread_setname_np(thread.native_handle(), name)</span><br></pre></td></tr></table></figure>
+<p>Note: Thread name length is restricted to 16 characters.</p>
+<p>Then you can check thread names by following commands:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/pid/task/[tid]/comm</span><br><span class="line">ps ps -eL -o lwp,comm | grep tid</span><br></pre></td></tr></table></figure>
+<h1 id="Mac"><a href="#Mac" class="headerlink" title="Mac"></a>Mac</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line">pthread_setname_np(name)</span><br></pre></td></tr></table></figure>
+<h1 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h1><h2 id="Set-Thread-Name-in-Native-Code"><a href="#Set-Thread-Name-in-Native-Code" class="headerlink" title="Set Thread Name in Native Code"></a><a href="https://docs.microsoft.com/en-us/visualstudio/debugger/how-to-set-a-thread-name-in-native-code?view=vs-2019" target="_blank" rel="noopener">Set Thread Name in Native Code</a></h2><p>The native method of setting the thread name is implemented by raising an SEH exception that is continued. An attached native debugger will get a ‘first chance’ notification of the exception. Raising an exception is precisely what you need to do to get the native debugger’s attention. The one raised here (0x406D1388) is recognized by VS (and WinDbg).</p>
+<p>Thus as a result, this works in all versions of Visual Studio but only while the Visual Studio debugger is attached to the process and will not be available in dumps or performance analysis tools.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Usage: SetThreadName ((DWORD)-1, "MainThread");</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="keyword">const</span> DWORD MS_VC_EXCEPTION = <span class="number">0x406D1388</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(push,8)</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagTHREADNAME_INFO</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    DWORD dwType; <span class="comment">// Must be 0x1000.</span></span><br><span class="line">    LPCSTR szName; <span class="comment">// Pointer to name (in user addr space).</span></span><br><span class="line">    DWORD dwThreadID; <span class="comment">// Thread ID (-1=caller thread).</span></span><br><span class="line">    DWORD dwFlags; <span class="comment">// Reserved for future use, must be zero.</span></span><br><span class="line">&#125; THREADNAME_INFO;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(pop)</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SetThreadName</span><span class="params">(DWORD dwThreadID, <span class="keyword">const</span> <span class="keyword">char</span>* threadName)</span> </span>&#123;</span><br><span class="line">    THREADNAME_INFO info;</span><br><span class="line">    info.dwType = <span class="number">0x1000</span>;</span><br><span class="line">    info.szName = threadName;</span><br><span class="line">    info.dwThreadID = dwThreadID;</span><br><span class="line">    info.dwFlags = <span class="number">0</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span>(push)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span>(disable: 6320 6322)</span></span><br><span class="line">    __try&#123;</span><br><span class="line">        RaiseException(MS_VC_EXCEPTION, <span class="number">0</span>, <span class="keyword">sizeof</span>(info) / <span class="keyword">sizeof</span>(ULONG_PTR), (ULONG_PTR*)&amp;info);</span><br><span class="line">    &#125;</span><br><span class="line">    __except (EXCEPTION_EXECUTE_HANDLER)&#123;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> <span class="meta-keyword">warning</span>(pop)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="SetThreadDescription"><a href="#SetThreadDescription" class="headerlink" title="SetThreadDescription"></a><a href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setthreaddescription" target="_blank" rel="noopener">SetThreadDescription</a></h2><p><code>SetThreadDescription</code> is supported starting in Windows 10, version 1607 or Windows Server 2016 and are only visible debugging in Visual Studio 2017 version 15.6 and later versions regardless of whether or not the debugger was attached to the process at the time that SetThreadDescription is invoked.</p>
+<p>Thread names are also visible when performing post-mortem debugging by loading a crash dump in Visual Studio or when using other tools, such as the <a href="https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/debugger-download-tools" target="_blank" rel="noopener">WinDbg</a> debugger and the <a href="https://docs.microsoft.com/zh-cn/windows-hardware/test/wpt/windows-performance-analyzer" target="_blank" rel="noopener">Windows Performance Analyzer</a> performance analyzer.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;processthreadsapi.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HRESULT r;</span><br><span class="line">    r = SetThreadDescription(</span><br><span class="line">        GetCurrentThread(),</span><br><span class="line">        <span class="string">L"ThreadName"</span></span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Set-Thread-Name-using-phread"><a href="#Set-Thread-Name-using-phread" class="headerlink" title="Set Thread Name using phread"></a><a href="https://github.com/msys2-contrib/mingw-w64/commit/0d95c795b44b76e1b60dfc119fd93cfd0cb35816" target="_blank" rel="noopener">Set Thread Name using phread</a></h2><p>You are in luck if you are using mingw64 because it already implemented pthread. </p>
+<p>Basically it’s the same as in Linux.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line">pthread_setname_np(thread.native_handle(), name)</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/07/Books-2020-md/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1321,7 +1475,7 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)-->
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
