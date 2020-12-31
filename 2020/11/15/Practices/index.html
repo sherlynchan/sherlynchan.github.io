@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.4.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="I have been hating  build systems since I started to work as a software engineer, when tons of issues and problems using CMake has brought me huge frustration. This post is to summarize what I have le">
+<meta name="keywords" content="tech">
+<meta property="og:type" content="article">
+<meta property="og:title" content="💻 How to Use CMake">
+<meta property="og:url" content="http://yoursite.com/2020/11/15/Practices/index.html">
+<meta property="og:site_name" content="Afterwork">
+<meta property="og:description" content="I have been hating  build systems since I started to work as a software engineer, when tons of issues and problems using CMake has brought me huge frustration. This post is to summarize what I have le">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2020/11/15/Practices/target_sources1.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/15/Practices/target_sources2.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/15/Practices/target_sources3.png">
+<meta property="og:updated_time" content="2020-12-31T21:00:28.034Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="💻 How to Use CMake">
+<meta name="twitter:description" content="I have been hating  build systems since I started to work as a software engineer, when tons of issues and problems using CMake has brought me huge frustration. This post is to summarize what I have le">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/15/Practices/target_sources1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/11/15/Practices/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>💻 How to Use CMake | Afterwork</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Afterwork</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Life is too short to think small.</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/15/Practices/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ShaolingC">
+      <meta itemprop="description" content="✨✨✨">
+      <meta itemprop="image" content="/images/yoda-hiding.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Afterwork">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">💻 How to Use CMake
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-11-15 20:54:41" itemprop="dateCreated datePublished" datetime="2020-11-15T20:54:41-08:00">2020-11-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-12-31 13:00:28" itemprop="dateModified" datetime="2020-12-31T13:00:28-08:00">2020-12-31</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>I have been hating  build systems since I started to work as a software engineer, when tons of issues and problems using CMake has brought me huge frustration. This post is to summarize what I have learned on CMake system (Yes, after being tortured for such a long time😣). Hopefully I can use it more effectively in the future.</p>
+<h1 id="What’s-CMake"><a href="#What’s-CMake" class="headerlink" title="What’s CMake?"></a>What’s CMake?</h1><p>Every time after we write the code, we will need the compiler to compile it and create executable files. These executable files are the ones that carry out the actual task. Only then, the end user could build and install the package, without knowing the details of how it’s done. </p>
+<p>We could say, without a build system, a project is just a collection of files. There are many build tools to achieve a build system. </p>
+<p>We can use Make. “GNU Make is a tool that controls the generation of executables and other non-source files of a program from the program’s source files.” It gets its knowledge of how to build your program from a file called the “makefile”. This makefile lists each of the non-source files and how to compute it from other files. When you write a program, you should write a makefile for it, so that it is possible to use “Make” to build and install the program. </p>
+<p>Sounds simple huh? Yeah but only if you are writing small projects. Doing Make becomes pretty painful when you hand on a project with a large codebase running on different systems using different compilers, etc., you might have tedious dependencies, complex makefiles maintainance, and a lot more issues to deal with.</p>
+<p>Here comes to CMake. <strong>As a build system generator, CMake stands for Cross-platform Make.</strong>  It has lots of advantages, not just overcoming the shortcomings of Make, in finding dependencies, protability, code generation. It supports different OSs, generators, multiple compilers, debuggers, multiple languages, etc.    </p>
+<p>CMake reads the projects to build from CMakeLists.txt files. During configuring phrase, it builds up an internal representation of the entire project and then the generation phrase create the project files. From there the generated Makefiles can be used to build the project.</p>
+<h1 id="CMake-V-S-Modern-CMake"><a href="#CMake-V-S-Modern-CMake" class="headerlink" title="CMake V.S. Modern CMake"></a>CMake V.S. Modern CMake</h1><p>Trust me, Modern CMake is gonna to save you from traditional CMake.</p>
+<p>Modern CMake is only available starting with version 3.0.0., which advocates for abandoning a traditional variable-based approach for a more structured model based on targets. </p>
+<h2 id="Targets-and-Properties"><a href="#Targets-and-Properties" class="headerlink" title="Targets and Properties"></a>Targets and Properties</h2><h3 id="Targets"><a href="#Targets" class="headerlink" title="Targets"></a>Targets</h3><p>An executable is a target, a library is a target. </p>
+<table>
+<thead>
+<tr>
+<th>Target Type</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Executables</td>
+<td>add_executable</td>
+</tr>
+<tr>
+<td>Shared Libraries</td>
+<td>add_library(SHARED)</td>
+</tr>
+<tr>
+<td>Static Libraries</td>
+<td>add_library(STATIC)</td>
+</tr>
+<tr>
+<td>Object Libraries</td>
+<td>add_library(OBJECT)</td>
+</tr>
+<tr>
+<td>Interface Libraries</td>
+<td>add_library(INTERFACE)</td>
+</tr>
+<tr>
+<td>Alias Libraries</td>
+<td>add_library(ALIAS)</td>
+</tr>
+</tbody>
+</table>
+<p>If you are familiar with shared libraries and static libraries, you can skip the following to Properties part.</p>
+<h4 id="Shared-Libraries-V-S-Static-Libraries"><a href="#Shared-Libraries-V-S-Static-Libraries" class="headerlink" title="Shared Libraries V.S. Static Libraries"></a><a href="https://amir.rachum.com/blog/2016/09/17/shared-libraries/" target="_blank" rel="noopener">Shared Libraries V.S. Static Libraries</a></h4><p>A library is a file that contains compiled code and data.</p>
+<h5 id="Static-Libraries"><a href="#Static-Libraries" class="headerlink" title="Static Libraries"></a><strong>Static Libraries</strong></h5><p>Linked into a compiled executable (or another library). After the compilation, the new artifact contains the static library’s content.</p>
+<h5 id="Shared-Libraries"><a href="#Shared-Libraries" class="headerlink" title="Shared Libraries"></a><strong>Shared Libraries</strong></h5><p>Loaded by the executable (or other shared library) at runtime.</p>
+<p><strong>Debugging Cheat Sheet</strong></p>
+<p>If you ever get this error when running an executable:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./main</span><br><span class="line">./main: error while loading shared libraries: librandom.so: cannot open shared object file: No such file or directory</span><br></pre></td></tr></table></figure>
+<p>Try doing the following:</p>
+<ul>
+<li>Find out what dependencies are missing with <code>ldd &lt;executable&gt;</code>.</li>
+<li>If you don’t identify them, you can check if they are direct dependencies by running <code>readelf -d &lt;executable&gt; | grep NEEDED</code>.</li>
+<li>Make sure the dependencies actually exist. Maybe you forgot to compile them or move them to a <code>libs</code> directory?</li>
+<li>Find out where dependencies are searched by using <code>LD_DEBUG=libs ldd &lt;executable&gt;</code>.</li>
+<li>If you need to add a directory to the search:<ul>
+<li>add the directory to the <code>LD_LIBRARY_PATH</code> environment variable.</li>
+<li>add the directory to the executable or shared library’s <code>rpath</code> or <code>runpath</code> by passing <code>-Wl,-rpath,&lt;dir&gt;</code> (for <code>rpath</code>) or <code>-Wl,--enable-new-dtags,-rpath,&lt;dir&gt;</code> (for <code>runpath</code>). Use <code>$ORIGIN</code> for paths relative to the executable.</li>
+</ul>
+</li>
+<li>If <code>ldd</code> shows that no dependencies are missing, see if your application has elevated privileges. If so, <code>ldd</code> might lie. </li>
+</ul>
+<h3 id="Properties"><a href="#Properties" class="headerlink" title="Properties"></a>Properties</h3><p>Targets have properties. Properties of a target are the source files it’s built from, the compiler options it requires, the libraries it links against.</p>
+<p>Target properties are defined in one of two scopes: <strong>INTERFACE</strong> and <strong>PRIVATE</strong>. Private properties are used <em>internally</em> to build the target, while interface properties are used <em>externally</em> by users of the target. In other words, interface properties model <strong>Usage-Requirements</strong>, whereas private properties model <strong>Build-Requirements</strong> of targets.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Traditional CMake</th>
+<th>Modern CMake</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>build-requirements are set on</td>
+<td>environment</td>
+<td>targets</td>
+</tr>
+<tr>
+<td>keep track of usage-requirements via</td>
+<td>(cache) variables</td>
+<td>targets</td>
+</tr>
+<tr>
+<td>usage-requirements propagation from dependency(target_link_libraries)</td>
+<td>explicit propagation by hand (except paths to library-files)</td>
+<td>automatic propagation</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># Adding build-requirements(usage-requirements)(both)</span><br><span class="line">target_include_directories(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;include-search-dir&gt;...)</span><br><span class="line">target_compile_definitions(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;macro-definitions&gt;...)</span><br><span class="line">target_compile_options(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;compiler-option&gt;...)</span><br><span class="line">target_compile_features(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;feature&gt;...)</span><br><span class="line">target_sources(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;source-file&gt;...)</span><br><span class="line">target_precompile_headers(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;header-file&gt;...)</span><br><span class="line">target_link_libraries(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;dependency&gt;...)</span><br><span class="line">target_link_options(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;linker-option&gt;...)</span><br><span class="line">target_link_directories(&lt;target&gt; PRIVATE(INTERFACE)(PUBLIC) &lt;linker-search-dir&gt;..)</span><br></pre></td></tr></table></figure>
+<h1 id="Modern-CMake"><a href="#Modern-CMake" class="headerlink" title="Modern CMake"></a>Modern CMake</h1><h2 id="Basic-Usage-Template"><a href="#Basic-Usage-Template" class="headerlink" title="Basic Usage Template"></a>Basic Usage Template</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Minimum Version</span></span><br><span class="line">cmake_minimum_required(VERSION 3.7)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$&#123;CMAKE_VERSION&#125;</span> VERSION_LESS 3.19)</span><br><span class="line">    cmake_policy(VERSION <span class="variable">$&#123;CMAKE_MAJOR_VERSION&#125;</span>.<span class="variable">$&#123;CMAKE_MINOR_VERSION&#125;</span>)</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">    cmake_policy(VERSION 3.19)</span><br><span class="line">endif()</span><br><span class="line"><span class="comment"># Setting a project</span></span><br><span class="line">project(MyProject VERSION 1.0</span><br><span class="line">                  DESCRIPTION <span class="string">"Example project"</span></span><br><span class="line">                  LANGUAGES CXX)</span><br><span class="line"><span class="comment"># Making an executable                </span></span><br><span class="line">add_executable(one two.cpp three.h)</span><br><span class="line"><span class="comment"># Making a library</span></span><br><span class="line">add_library(one STATIC two.cpp three.h)</span><br><span class="line">target_link_libraries(one PUBLIC calclib)</span><br><span class="line"><span class="comment"># add includes to targets</span></span><br><span class="line">target_include_directories(one PUBLIC include)</span><br><span class="line">target_compile_features(one PUBLIC cxx_std_11)</span><br><span class="line"><span class="comment"># add subdirectories</span></span><br><span class="line">add_subdirectory(libraries)</span><br></pre></td></tr></table></figure>
+<p><strong>CMake Programming Note:</strong></p>
+<p>Most CMake commands happen at configure time(eg: if statements). If you need logic to occur at build time or even install time, <a href="https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html" target="_blank" rel="noopener">generator-expressions</a> were added for this purpose, which are evaluated in target properties.</p>
+<p>If you want to put a compile flag only for the DEBUG configuration, you could do:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">target_compile_options(MyTarget PRIVATE &quot;$&lt;$&lt;CONFIG:Debug&gt;:--my-flag&gt;&quot;)</span><br><span class="line">target_include_directories(</span><br><span class="line">    MyTarget</span><br><span class="line">  PUBLIC</span><br><span class="line">    $&lt;BUILD_INTERFACE:$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/include&gt;</span><br><span class="line">    $&lt;INSTALL_INTERFACE:include&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>Support for Generator Expressions. </p>
+<p>• target_ commands </p>
+<p>• file(GENERATE) command </p>
+<p>• add_executable/add_library commands </p>
+<p>• install command (partial) </p>
+<p>• add_custom_target command (partial) </p>
+<p>• add_custom_command command (partial)</p>
+<p>There are others, but these are the most important.</p>
+<h2 id="Adding-Features"><a href="#Adding-Features" class="headerlink" title="Adding Features"></a>Adding Features</h2><h3 id="Position-independent-code"><a href="#Position-independent-code" class="headerlink" title="Position independent code"></a>Position independent code</h3><p><a href="https://cmake.org/cmake/help/latest/variable/CMAKE_POSITION_INDEPENDENT_CODE.html" target="_blank" rel="noopener">This</a> is best known as the <code>-fPIC</code> flag. Position-<strong>independent</strong> code is not tied to a specific address, and can be loaded at different addresses in different processes. CMake will include the flag for <code>SHARED</code> or <code>MODULE</code> libraries. </p>
+<p>But if you do explicitly need it:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span>(CMAKE_POSITION_INDEPENDENT_CODE <span class="keyword">ON</span>)</span><br></pre></td></tr></table></figure>
+<p>will do it globally, or:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set_target_properties</span>(lib1 PROPERTIES POSITION_INDEPENDENT_CODE <span class="keyword">ON</span>)</span><br></pre></td></tr></table></figure>
+<p>to explicitly turn it <code>ON</code> (or <code>OFF</code>) for a target.</p>
+<h2 id="Useful-Modules"><a href="#Useful-Modules" class="headerlink" title="Useful Modules"></a>Useful Modules</h2><p>Here are a few highlights.</p>
+<h3 id="CMakeDependentOption"><a href="#CMakeDependentOption" class="headerlink" title="CMakeDependentOption"></a><a href="https://cmake.org/cmake/help/latest/module/CMakeDependentOption.html" target="_blank" rel="noopener">CMakeDependentOption</a></h3><p>This adds a command <code>cmake_dependent_option</code> that sets an option based on another set of variables being true. </p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(CMakeDependentOption)</span><br><span class="line">cmake_dependent_option(BUILD_TESTS <span class="string">"Build your tests"</span> <span class="keyword">ON</span> <span class="string">"VAL1;VAL2"</span> <span class="keyword">OFF</span>)</span><br></pre></td></tr></table></figure>
+<p>which is just a shortcut for this:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(VAL1 <span class="keyword">AND</span> VAL2)</span><br><span class="line">    <span class="keyword">set</span>(BUILD_TESTS_DEFAULT <span class="keyword">ON</span>)</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">    <span class="keyword">set</span>(BUILD_TESTS_DEFAULT <span class="keyword">OFF</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">option</span>(BUILD_TESTS <span class="string">"Build your tests"</span> <span class="variable">$&#123;BUILD_TESTS_DEFAULT&#125;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(NOT BUILD_TESTS_DEFAULT)</span><br><span class="line">    <span class="keyword">mark_as_advanced</span>(BUILD_TESTS)</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+<p>Note that <code>BUILD_TESTING</code> is a better way to check for testing being enabled if you use <code>include(CTest)</code>, since it is defined for you.</p>
+<h3 id="CMakePrintHelpers"><a href="#CMakePrintHelpers" class="headerlink" title="CMakePrintHelpers"></a><a href="https://cmake.org/cmake/help/latest/module/CMakePrintHelpers.html" target="_blank" rel="noopener">CMakePrintHelpers</a></h3><p>This module has a couple of handy output functions. <code>cmake_print_properties</code> lets you easily print properties. And <code>cmake_print_variables</code> will print the names and values of any variables you give it.</p>
+<h3 id="CheckCXXCompilerFlag"><a href="#CheckCXXCompilerFlag" class="headerlink" title="CheckCXXCompilerFlag"></a><a href="https://cmake.org/cmake/help/latest/module/CheckCXXCompilerFlag.html" target="_blank" rel="noopener">CheckCXXCompilerFlag</a></h3><p>This checks to see if a flag is supported. For example:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(CheckCXXCompilerFlag)</span><br><span class="line">check_cxx_compiler_flag(-someflag OUTPUT_VARIABLE)</span><br></pre></td></tr></table></figure>
+<p>Similar modules, such as <code>CheckIncludeFileCXX</code>, <code>CheckStructHasMember</code>, <code>TestBigEndian</code>, and <code>CheckTypeSize</code> that allow you to check for information about the system and you can communicate that to your source code.</p>
+<h3 id="WriteCompilerDetectionHeader"><a href="#WriteCompilerDetectionHeader" class="headerlink" title="WriteCompilerDetectionHeader"></a><a href="https://cmake.org/cmake/help/latest/module/WriteCompilerDetectionHeader.html" target="_blank" rel="noopener">WriteCompilerDetectionHeader</a></h3><p>It allows you to look for a list of features that some compilers support, and write out a C++ header file that lets you know whether that feature is available. It even can provide compatibility macros for features that have changed names!</p>
+<p>To use:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">write_compiler_detection_header(</span><br><span class="line">  FILE myoutput.h</span><br><span class="line">  PREFIX My</span><br><span class="line">  COMPILERS GNU Clang MSVC Intel</span><br><span class="line">  FEATURES cxx_variadic_templates</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>This supports compiler features (defined to 0 or 1), symbols (defined to empty or the symbol), and macros that support different names. They will be prefixed with the PREFIX you provide. You can separate compilers into different files using <code>OUTPUT_FILES_DIR</code>.</p>
+<p>The downside is that you do have to list the compilers you expect to support. If you use the <code>ALLOW_UNKNOWN_COMPILERS</code> flag(s), you can keep this from erroring on unknown compilers, but it will still leave all features empty.</p>
+<h3 id="try-compile-try-run"><a href="#try-compile-try-run" class="headerlink" title="try_compile/try_run"></a><a href="https://cmake.org/cmake/help/latest/command/try_compile.html" target="_blank" rel="noopener"><code>try_compile</code></a>/<a href="https://cmake.org/cmake/help/latest/command/try_run.html" target="_blank" rel="noopener"><code>try_run</code></a></h3><p>This is not exactly a module, but is crucial to many of the modules listed above. You can attempt to compile  or run a bit of code at configure time. This can allow you to get information about the capabilities of your system. The basic syntax is:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try_compile</span>(</span><br><span class="line">  RESULT_VAR</span><br><span class="line">    bindir</span><br><span class="line">  SOURCES</span><br><span class="line">    source.cpp</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>There are lots of options you can add, like <code>COMPILE_DEFINITIONS</code>. In CMake 3.8+, this will honor the CMake C/C++/CUDA standard settings. If you use <code>try_run</code> instead, it will run the resulting program and give you the output in <code>RUN_OUTPUT_VARIABLE</code>.</p>
+<h3 id="FeatureSummary"><a href="#FeatureSummary" class="headerlink" title="FeatureSummary"></a><a href="https://cmake.org/cmake/help/latest/module/FeatureSummary.html" target="_blank" rel="noopener">FeatureSummary</a></h3><p>It allows you to print out a list of packages what were searched for, as well as any options you explicity mark. It’s partially but not completely tied into <a href="https://cmake.org/cmake/help/latest/command/find_package.html" target="_blank" rel="noopener"><code>find_package</code></a>. </p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(FeatureSummary)</span><br></pre></td></tr></table></figure>
+<p>Then, for any find packages you have run or will run, you can extend the default information:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">set_package_properties(OpenMP PROPERTIES</span><br><span class="line">    URL <span class="string">"http://www.openmp.org"</span></span><br><span class="line">    DESCRIPTION <span class="string">"Parallel compiler directives"</span></span><br><span class="line">    PURPOSE <span class="string">"This is what it does in my package"</span>)</span><br></pre></td></tr></table></figure>
+<p>You can also set the <code>TYPE</code> of a package to <code>RUNTIME</code>, <code>OPTIONAL</code>, <code>RECOMMENDED</code>, or <code>REQUIRED</code>; you can’t, however, lower the type of a package; if you have already added a <code>REQUIRED</code> package through <a href="https://cmake.org/cmake/help/latest/command/find_package.html" target="_blank" rel="noopener"><code>find_package</code></a> based on an option, you’ll see it listed as <code>REQUIRED</code>.</p>
+<p>And, you can mark any options as part of the feature summary. If you choose the same name as a package, the two interact with each other.</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add_feature_info(WITH_OPENMP OpenMP_CXX_FOUND <span class="string">"OpenMP (Thread safe FCNs only)"</span>)</span><br></pre></td></tr></table></figure>
+<p>Then, you can print out the summary of features, either to the screen or a log file:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(CMAKE_PROJECT_NAME <span class="keyword">STREQUAL</span> PROJECT_NAME)</span><br><span class="line">    feature_summary(WHAT ENABLED_FEATURES DISABLED_FEATURES PACKAGES_FOUND)</span><br><span class="line">    feature_summary(FILENAME <span class="variable">$&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span>/features.log WHAT ALL)</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+<p>You can build any collection of <code>WHAT</code> items that you like, or just use <code>ALL</code>.</p>
+<h2 id="Including-Projects"><a href="#Including-Projects" class="headerlink" title="Including Projects"></a>Including Projects</h2><h3 id="Git-Submodule-Method"><a href="#Git-Submodule-Method" class="headerlink" title="Git Submodule Method"></a>Git Submodule Method</h3><p>If you want to add a Git repository on the same service (GitHub, GitLab, BitBucket, etc), the following is the correct Git command to set that up as a submodule in the <code>extern</code> directory:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gitbook $ git submodule add ../../owner/repo.git extern/repo</span><br></pre></td></tr></table></figure>
+<p>The relative path to the repo is important; it allows you to keep the same access method (ssh or https) as the parent repository. When you are inside the submodule, you can treat it just like a normal repo, and when you are in the parent repository, you can “add” to change the current commit pointer.</p>
+<p>But the traditional downside is that you either have to have your users know git submodule commands, so they can <code>init</code> and <code>update</code> the repo, or they have to add <code>--recursive</code> when they initially clone your repo. CMake can offer a solution:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># checks for Git using CMake's built in `FindGit.cmake`.</span></span><br><span class="line"><span class="keyword">find_package</span>(Git QUIET)</span><br><span class="line"><span class="keyword">if</span>(GIT_FOUND <span class="keyword">AND</span> EXISTS <span class="string">"$&#123;PROJECT_SOURCE_DIR&#125;/.git"</span>)</span><br><span class="line"><span class="comment"># Update submodules as needed</span></span><br><span class="line">    <span class="comment"># if you are in a git checkout of your source, add an option (defaulting to `ON`) </span></span><br><span class="line">    <span class="comment"># that allows developers to turn off the feature if they need to</span></span><br><span class="line">    <span class="keyword">option</span>(GIT_SUBMODULE <span class="string">"Check submodules during build"</span> <span class="keyword">ON</span>)</span><br><span class="line">    <span class="keyword">if</span>(GIT_SUBMODULE)</span><br><span class="line">        <span class="keyword">message</span>(STATUS <span class="string">"Submodule update"</span>)</span><br><span class="line">        <span class="keyword">execute_process</span>(COMMAND <span class="variable">$&#123;GIT_EXECUTABLE&#125;</span> submodule update --init --recursive</span><br><span class="line">                        WORKING_DIRECTORY <span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span></span><br><span class="line">                        RESULT_VARIABLE GIT_SUBMOD_RESULT)</span><br><span class="line">        <span class="keyword">if</span>(NOT GIT_SUBMOD_RESULT <span class="keyword">EQUAL</span> <span class="string">"0"</span>)</span><br><span class="line">            <span class="keyword">message</span>(FATAL_ERROR <span class="string">"git submodule update --init failed with $&#123;GIT_SUBMOD_RESULT&#125;, please checkout submodules"</span>)</span><br><span class="line">        <span class="keyword">endif</span>()</span><br><span class="line">    <span class="keyword">endif</span>()</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(NOT EXISTS <span class="string">"$&#123;PROJECT_SOURCE_DIR&#125;/extern/repo/CMakeLists.txt"</span>)</span><br><span class="line">    <span class="keyword">message</span>(FATAL_ERROR <span class="string">"The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again."</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+<p>Now, your users can be completely oblivious to the existence of the submodules, and you can still keep up good development practices! The only thing to watch out for is for developers; you will reset the submodule when you rerun CMake if you are developing inside the submodule. Just add new commits to the parent staging area, and you’ll be fine.</p>
+<p>You can then include projects that provide good CMake support:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_subdirectory</span>(extern/repo)</span><br></pre></td></tr></table></figure>
+<p>Or, you can build an interface library target yourself if it is a header only project. Or, you can use <code>find_package</code> if that is supported, probably preparing the initial search directory to be the one you’ve added (check the docs or the file for the <code>Find*.cmake</code> file you are using). You can also include a CMake helper file directory if you append to your <code>CMAKE_MODULE_PATH</code>.</p>
+<h3 id="ExternalProject"><a href="#ExternalProject" class="headerlink" title="ExternalProject"></a>ExternalProject</h3><p>Run while compiling, can’t use  <code>add_subdirectory</code> in configuration.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ExternalProject_Add(&lt;name&gt; [&lt;option&gt;...])</span><br><span class="line">ExternalProject_Add_Step(&lt;name&gt; &lt;step&gt; [&lt;option&gt;...])</span><br><span class="line">ExternalProject_Get_Property</span><br><span class="line">ExternalProject_Add_StepTargets(&lt;name&gt; [NO_DEPENDS] &lt;step1&gt; [&lt;step2&gt;...])</span><br></pre></td></tr></table></figure>
+<p>Example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">ExternalProject_Add(project_example</span><br><span class="line">  URL http://.../project_example.tar.gz</span><br><span class="line">  PREFIX $&#123;CMAKE_CURRENT_BINARY_DIR&#125;/project_example</span><br><span class="line">  CONFIGURE_COMMAND &quot;&quot;</span><br><span class="line">  BUILD_COMMAND make</span><br><span class="line">  INSTALL_COMMAND make install</span><br><span class="line">  PREFIX=$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/project_example</span><br><span class="line">)</span><br><span class="line">ExternalProject_Get_Property(project_example install_dir)</span><br><span class="line">add_library(example STATIC IMPORTED)</span><br><span class="line">set_property(TARGET example PROPERTY IMPORTED_LOCATION $&#123;install_dir&#125;/lib/example.a)</span><br><span class="line">add_dependencies(example project_example)</span><br><span class="line"></span><br><span class="line">add_executable(myapp main.c)</span><br><span class="line">include_directories($&#123;install_dir&#125;/include/example)</span><br><span class="line">target_link_libraries(myapp example)</span><br></pre></td></tr></table></figure>
+<h4 id="vcpkg"><a href="#vcpkg" class="headerlink" title="vcpkg"></a><a href="https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=msvc-160" target="_blank" rel="noopener">vcpkg</a></h4><p>a cross-platform command-line package manager for C and C++ libraries</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># install vcpkg</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/Microsoft/vcpkg.git</span><br><span class="line"><span class="built_in">cd</span> vcpkg</span><br><span class="line">./bootstrap-vcpkg.sh</span><br><span class="line"><span class="comment"># install required package, eg: opencv</span></span><br><span class="line">vcpkg install opencv</span><br><span class="line"><span class="comment"># add these to your program</span></span><br><span class="line">find_package(OpenCV REQUIRED)</span><br><span class="line">target_link_libraries(target <span class="variable">$&#123;OpenCV_LIBS&#125;</span>)</span><br><span class="line"><span class="comment"># CMake configure</span></span><br><span class="line">cmake .. -DCMAKE_TOOLCHAIN_FILE=path/to/vcpkg/scripts/buildsystems/vcpkg.cmake</span><br><span class="line"><span class="comment"># for usage convenience</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">"path/to/vcpkg/:<span class="variable">$PATH</span>"</span></span><br></pre></td></tr></table></figure>
+<h3 id="DownloadProject"><a href="#DownloadProject" class="headerlink" title="DownloadProject"></a><a href="https://github.com/Crascit/DownloadProject" target="_blank" rel="noopener">DownloadProject</a></h3><p>Download an external project’s source at CMake’s configure step rather than as part of the main build.</p>
+<p>The primary advantage is that the project’s source code can then be included directly in the main CMake build using the  <code>add_subdirectory</code> command, making all of the external project’s targets, etc. available without any further effort.</p>
+<h3 id="FetchContent-CMake-3-11-："><a href="#FetchContent-CMake-3-11-：" class="headerlink" title="FetchContent  (CMake 3.11+)："></a><a href="https://cmake.org/cmake/help/latest/module/FetchContent.html" target="_blank" rel="noopener">FetchContent</a>  (CMake 3.11+)：</h3><p>Do your download of data or packages as part of the configure instead of the build, similar as DownloadProject.</p>
+<p>The key ideas are:</p>
+<ul>
+<li>Use <code>FetchContent_Declare(MyName)</code> to get data or a package. You can set URLs, Git repositories, and more.</li>
+<li>Use <code>FetchContent_GetProperties(MyName)</code> on the name you picked in the first step to get <code>MyName_*</code> variables.</li>
+<li>Check <code>MyName_POPULATED</code>, and if not populated, use <code>FetchContent_Populate(MyName)</code> (and if a package, <code>add_subdirectory(&quot;${MyName_SOURCE_DIR}&quot; &quot;${MyName_BINARY_DIR}&quot;)</code>)</li>
+</ul>
+<p>For example, to download Catch2:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(FetchContent)</span><br><span class="line">FetchContent_Declare(</span><br><span class="line">  catch</span><br><span class="line">  GIT_REPOSITORY https://github.com/catchorg/Catch2.git</span><br><span class="line">  GIT_TAG        v2.<span class="number">13.0</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># CMake 3.14+</span></span><br><span class="line">FetchContent_MakeAvailable(catch)</span><br></pre></td></tr></table></figure>
+<p>If you can’t use CMake 3.14+, the classic way to prepare code was:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CMake 3.11+</span></span><br><span class="line">FetchContent_GetProperties(catch)</span><br><span class="line"><span class="keyword">if</span>(NOT catch_POPULATED)</span><br><span class="line">  FetchContent_Populate(catch)</span><br><span class="line">  <span class="keyword">add_subdirectory</span>(<span class="variable">$&#123;catch_SOURCE_DIR&#125;</span> <span class="variable">$&#123;catch_BINARY_DIR&#125;</span>)</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+<p>Of course, you could bundled this up into a macro:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="variable">$&#123;CMAKE_VERSION&#125;</span> VERSION_LESS <span class="number">3.14</span>)</span><br><span class="line">    <span class="keyword">macro</span>(FetchContent_MakeAvailable NAME)</span><br><span class="line">        FetchContent_GetProperties(<span class="variable">$&#123;NAME&#125;</span>)</span><br><span class="line">        <span class="keyword">if</span>(NOT <span class="variable">$&#123;NAME&#125;</span>_POPULATED)</span><br><span class="line">            FetchContent_Populate(<span class="variable">$&#123;NAME&#125;</span>)</span><br><span class="line">            <span class="keyword">add_subdirectory</span>(<span class="variable">$&#123;$&#123;NAME&#125;</span>_SOURCE_DIR&#125; <span class="variable">$&#123;$&#123;NAME&#125;</span>_BINARY_DIR&#125;)</span><br><span class="line">        <span class="keyword">endif</span>()</span><br><span class="line">    <span class="keyword">endmacro</span>()</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+<h2 id="Export-targets-and-find-package"><a href="#Export-targets-and-find-package" class="headerlink" title="Export targets and find_package()"></a>Export targets and find_package()</h2><h3 id="Defining-a-library"><a href="#Defining-a-library" class="headerlink" title="Defining a library"></a>Defining a library</h3><p>Define the library and variable that will be used to generate CMake packages.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">CMakeLists.txt</span><br><span class="line">include(GNUInstallDirs)</span><br><span class="line">include(CMakePackageConfigHelpers)</span><br><span class="line">set(INSTALL_CMAKE_DIR $&#123;CMAKE_INSTALL_LIBDIR&#125;/cmake/$&#123;PROJECT_NAME&#125;)</span><br><span class="line">set(TARGETS_EXPORT_NAME &quot;$&#123;PROJECT_NAME&#125;Targets&quot;)</span><br><span class="line">set(generated_dir &quot;$&#123;CMAKE_CURRENT_BINARY_DIR&#125;/generated&quot;)</span><br><span class="line">set(project_config &quot;$&#123;generated_dir&#125;/$&#123;PROJECT_NAME&#125;Config.cmake&quot;)</span><br><span class="line">set(version_config &quot;$&#123;generated_dir&#125;/$&#123;PROJECT_NAME&#125;ConfigVersion.cmake&quot;)</span><br><span class="line">add_library($&#123;PROJECT_NAME&#125; SHARED $&#123;PROJECT_NAME&#125;.cpp)</span><br><span class="line">set_target_properties($&#123;PROJECT_NAME&#125; PROPERTIES</span><br><span class="line"> VERSION &quot;$&#123;PROJECT_VERSION&#125;&quot;</span><br><span class="line"> SOVERSION &quot;$&#123;PROJECT_VERSION_MAJOR&#125;.$&#123;PROJECT_VERSION_MINOR&#125;&quot;</span><br><span class="line"> PUBLIC_HEADER &quot;$&#123;PROJECT_NAME&#125;.h&quot;)</span><br></pre></td></tr></table></figure>
+<h3 id="Include-Directories"><a href="#Include-Directories" class="headerlink" title="Include Directories"></a>Include Directories</h3><p>When setting up the include paths for your project it is necessary to use generator expressions when setting the target_include_directories command. Public includes must have a BUILD_INTERFACE and an INSTALL_INTERFACE so that the exported library will have the correct include paths in the generated files.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">target_include_directories($&#123;PROJECT_NAME&#125;</span><br><span class="line"> PUBLIC</span><br><span class="line"> $&lt;BUILD_INTERFACE:$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/include&gt;</span><br><span class="line"> $&lt;INSTALL_INTERFACE:$&#123;CMAKE_INSTALL_INCLUDEDIR&#125;&gt;</span><br><span class="line">)</span><br><span class="line">install(DIRECTORY</span><br><span class="line"> $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/include/</span><br><span class="line"> DESTINATION $&#123;CMAKE_INSTALL_INCLUDEDIR&#125;</span><br><span class="line"> FILES_MATCHING PATTERN &quot;*.h&quot;</span><br><span class="line">)</span><br><span class="line">install(TARGETS $&#123;PROJECT_NAME&#125;</span><br><span class="line"> EXPORT $&#123;TARGETS_EXPORT_NAME&#125;</span><br><span class="line"> LIBRARY DESTINATION $&#123;CMAKE_INSTALL_LIBDIR&#125;</span><br><span class="line"> PUBLIC_HEADER DESTINATION $&#123;CMAKE_INSTALL_INCLUDEDIR&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="CMake-config-setup"><a href="#CMake-config-setup" class="headerlink" title="CMake config setup"></a>CMake config setup</h3><p>Add the generation logic to the CMakeLists.txt file</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">write_basic_package_version_file(</span><br><span class="line"> &quot;$&#123;version_config&#125;&quot;</span><br><span class="line"> VERSION $&#123;PROJECT_VERSION&#125;</span><br><span class="line"> COMPATIBILITY SameMajorVersion</span><br><span class="line">)</span><br><span class="line">configure_package_config_file(config.cmake.in</span><br><span class="line"> &quot;$&#123;project_config&#125;&quot;</span><br><span class="line"> INSTALL_DESTINATION $&#123;INSTALL_CMAKE_DIR&#125;</span><br><span class="line">)</span><br><span class="line">install(</span><br><span class="line"> EXPORT &quot;$&#123;TARGETS_EXPORT_NAME&#125;&quot;</span><br><span class="line"> NAMESPACE &quot;$&#123;PROJECT_NAME&#125;::&quot;</span><br><span class="line"> DESTINATION $&#123;INSTALL_CMAKE_DIR&#125;</span><br><span class="line">)</span><br><span class="line">install(</span><br><span class="line"> FILES $&#123;version_config&#125; $&#123;project_config&#125;</span><br><span class="line"> DESTINATION $&#123;INSTALL_CMAKE_DIR&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>The template file used during the config setup.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">config.cmake.in</span><br><span class="line">@PACKAGE_INIT@</span><br><span class="line">include(&quot;$&#123;CMAKE_CURRENT_LIST_DIR&#125;/@TARGETS_EXPORT_NAME@.cmake&quot;)</span><br><span class="line">set(@PROJECT_NAME@_INCLUDE_DIRS $&#123;PACKAGE_PREFIX_DIR&#125;/include)</span><br><span class="line">set(@PROJECT_NAME@_LIBRARIES @PROJECT_NAME@::@PROJECT_NAME@)</span><br><span class="line">check_required_components(&quot;@PROJECT_NAME@&quot;)</span><br></pre></td></tr></table></figure>
+<h3 id="Consuming-CMake-config-modules"><a href="#Consuming-CMake-config-modules" class="headerlink" title="Consuming CMake config modules"></a>Consuming CMake config modules</h3><p>Build the executable and link against the new libraries</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">find_package(libA 0.1.0 REQUIRED)</span><br><span class="line">find_package(libB 0.1.0 REQUIRED)</span><br><span class="line">set(CMAKE_INSTALL_RPATH &quot;$&#123;CMAKE_INSTALL_PREFIX&#125;/lib&quot;)</span><br><span class="line">set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)</span><br><span class="line">add_executable($&#123;PROJECT_NAME&#125; $&#123;PROJECT_NAME&#125;.cpp)</span><br><span class="line">target_link_libraries($&#123;PROJECT_NAME&#125;</span><br><span class="line"> $&#123;libA_LIBRARIES&#125;</span><br><span class="line"> $&#123;libB_LIBRARIES&#125;</span><br><span class="line"> )</span><br><span class="line">target_include_directories($&#123;PROJECT_NAME&#125; PUBLIC</span><br><span class="line"> $&#123;libA_INCLUDE_DIRS&#125;</span><br><span class="line"> $&#123;libB_INCLUDE_DIRS&#125;</span><br><span class="line">)</span><br><span class="line">install(TARGETS $&#123;PROJECT_NAME&#125;</span><br><span class="line"> RUNTIME DESTINATION $&#123;CMAKE_INSTALL_BINDIR&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="Traditional-Library-pkg-config-configuration-Solution"><a href="#Traditional-Library-pkg-config-configuration-Solution" class="headerlink" title="Traditional Library pkg-config configuration Solution"></a>Traditional Library pkg-config configuration Solution</h3><p>For libraries using older version CMake, the above solution may not be working. Here is a solution.</p>
+<h4 id="Defining-a-library-1"><a href="#Defining-a-library-1" class="headerlink" title="Defining a library"></a>Defining a library</h4><p>When creating a library consider using set_target_properties to define the version of the library and the public headers for the library.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">CMakeLists.txt</span><br><span class="line"># Paths from GNUInstallDirs are relative paths.</span><br><span class="line">include(GNUInstallDirs)</span><br><span class="line">include(CMakePackageConfigHelpers)</span><br><span class="line">add_library($&#123;PROJECT_NAME&#125; SHARED $&#123;PROJECT_NAME&#125;.cpp)</span><br><span class="line">set_target_properties($&#123;PROJECT_NAME&#125; PROPERTIES</span><br><span class="line"> VERSION &quot;$&#123;PROJECT_VERSION&#125;&quot;</span><br><span class="line"> SOVERSION &quot;$&#123;PROJECT_VERSION_MAJOR&#125;.$&#123;PROJECT_VERSION_MINOR&#125;&quot;</span><br><span class="line"> PUBLIC_HEADER &quot;$&#123;PROJECT_NAME&#125;.h&quot;)</span><br><span class="line"># When installing a library be sure to use a relative path to the DESTINATION.</span><br><span class="line"># That will make the exported target relocatable which is necessary for sysroots created by BitBake.</span><br><span class="line">install(TARGETS $&#123;PROJECT_NAME&#125;</span><br><span class="line"> LIBRARY DESTINATION $&#123;CMAKE_INSTALL_LIBDIR&#125;</span><br><span class="line"> PUBLIC_HEADER DESTINATION $&#123;CMAKE_INSTALL_INCLUDEDIR&#125;)</span><br></pre></td></tr></table></figure>
+<h4 id="Pkg-config-setup"><a href="#Pkg-config-setup" class="headerlink" title="Pkg-config setup"></a>Pkg-config setup</h4><p>Create and install a pkg-config file by using a template and substituting cmake variables.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ProjectName.pc.in</span><br><span class="line">prefix=@CMAKE_INSTALL_PREFIX@</span><br><span class="line">exec_prefix=$&#123;prefix&#125;</span><br><span class="line">libdir=$&#123;prefix&#125;/@CMAKE_INSTALL_LIBDIR@</span><br><span class="line">includedir=$&#123;prefix&#125;/@CMAKE_INSTALL_INCLUDEDIR@</span><br><span class="line">Name: @PROJECT_NAME@-@PROJECT_VERSION@</span><br><span class="line">Description: @PROJECT_NAME@</span><br><span class="line">Version: @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@</span><br><span class="line">Libs: -L$&#123;libdir&#125; -l@PROJECT_NAME@</span><br><span class="line">Cflags: -I$&#123;includedir&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CMakeLists.txt</span><br><span class="line">configure_file($&#123;PROJECT_NAME&#125;.pc.in $&#123;PROJECT_NAME&#125;.pc @ONLY)</span><br><span class="line">install(FILES $&#123;CMAKE_CURRENT_BINARY_DIR&#125;/$&#123;PROJECT_NAME&#125;.pc</span><br><span class="line"> DESTINATION $&#123;CMAKE_INSTALL_LIBDIR&#125;/pkgconfig)</span><br></pre></td></tr></table></figure>
+<h4 id="Consuming-libraries"><a href="#Consuming-libraries" class="headerlink" title="Consuming libraries"></a>Consuming libraries</h4><p>Use the FindPkgConfig module to search for the pkg-config files that have been installed.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find_package(PkgConfig REQUIRED)</span><br><span class="line">pkg_check_modules(NAMESPACE_A REQUIRED libA)</span><br><span class="line">pkg_check_modules(NAMESPACE_B REQUIRED libB)</span><br></pre></td></tr></table></figure>
+<p>Adjust the RPATH so that the new binary can use the library that may be installed into a separate prefix</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set(CMAKE_INSTALL_RPATH &quot;$&#123;CMAKE_INSTALL_PREFIX&#125;/lib&quot;)</span><br><span class="line">set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)</span><br></pre></td></tr></table></figure>
+<p>Change the link_directories so that the linker knows where to search for the new libraries.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">link_directories($&#123;NAMESPACE_A_LIBRARY_DIRS&#125; $&#123;NAMESPACE_B_LIBRARY_DIRS&#125;)</span><br></pre></td></tr></table></figure>
+<p>Define your target and add the correct compiler options.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">add_executable($&#123;PROJECT_NAME&#125; $&#123;PROJECT_NAME&#125;.cpp)</span><br><span class="line">target_link_libraries($&#123;PROJECT_NAME&#125;</span><br><span class="line"> $&#123;NAMESPACE_A_LIBRARIES&#125;</span><br><span class="line"> $&#123;NAMESPACE_B_LIBRARIES&#125;</span><br><span class="line"> )</span><br><span class="line">target_include_directories($&#123;PROJECT_NAME&#125; PUBLIC $&#123;NAMESPACE_A_INCLUDE_DIRS&#125; $&#123;NAMESPACE_B_INCLUDE_DIRS&#125;)</span><br><span class="line">target_compile_options($&#123;PROJECT_NAME&#125; PUBLIC $&#123;NAMESPACE_A_CFLAGS_OTHER&#125; $&#123;NAMESPACE_B_CFLAGS_OTHER&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="Utilities"><a href="#Utilities" class="headerlink" title="Utilities"></a>Utilities</h2><p>Set the following properties or <code>CMAKE_*</code> initializer variables to the command line for the tools. Most of them are limited to C or CXX with make or ninja generators.</p>
+<ul>
+<li><code>&lt;LANG&gt;_CLANG_TIDY</code>: CMake 3.6+</li>
+<li><code>&lt;LANG&gt;_CPPCHECK</code></li>
+<li><code>&lt;LANG&gt;_CPPLINT</code></li>
+<li><code>&lt;LANG&gt;_INCLUDE_WHAT_YOU_USE</code></li>
+</ul>
+<h3 id="Clang-tidy"><a href="#Clang-tidy" class="headerlink" title="Clang tidy"></a>Clang tidy</h3><p>Here is a simple example of using Clang-Tidy:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cmake -S . -B build-tidy -DCMAKE_CXX_CLANG_TIDY=<span class="string">"<span class="variable">$(which clang-tidy)</span>;-fix"</span></span><br><span class="line">cmake --build build -j 1</span><br></pre></td></tr></table></figure>
+<p>The <code>-fix</code> part is optional, and will modify your source files to try to fix the tidy warning issued. If you are working in a git repository, this is fairly safe as you can see what has changed. However, make sure you <strong>do not run your makefile/ninja build in parallel</strong>! This will not work very well at all if it tries to fix the same header twice.</p>
+<p>If you want to explicitly use the target form to ensure you only call this on your local targets, you can set a variable (maybe something like <code>DO_CLANG_TIDY</code>) instead of the <code>CMAKE_CXX_CLANG_TIDY</code> variable, then add it to your target properties as you create them. You can find clang-tidy in your path like this:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">find_program</span>(</span><br><span class="line">    CLANG_TIDY_EXE</span><br><span class="line">    NAMES <span class="string">"clang-tidy"</span></span><br><span class="line">    DOC <span class="string">"Path to clang-tidy executable"</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="Include-what-you-use"><a href="#Include-what-you-use" class="headerlink" title="Include what you use"></a>Include what you use</h3><p>This is an example for using include what you use. First, you’ll need to have the tool, such as in a docker container or with brew (macOS) with <code>brew install include-what-you-use</code>. Then, you can pass this into your build without modifying the source:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">build # cmake -S . -B build-iwyu -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE=include-what-you-use</span><br></pre></td></tr></table></figure>
+<p>Finally, you can collect the output and (optionally) apply the fixes:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">build # cmake --build build-iwyu 2&gt; iwyu.out build # fix_includes.py &lt; iwyu.out</span><br></pre></td></tr></table></figure>
+<p>(You should check the fixes first, or touch them up after applying!)</p>
+<h3 id="Link-what-you-use"><a href="#Link-what-you-use" class="headerlink" title="Link what you use"></a>Link what you use</h3><p>There is a boolean target property, <code>LINK_WHAT_YOU_USE</code>, that will check for extraneous files when linking.</p>
+<h3 id="Clang-format"><a href="#Clang-format" class="headerlink" title="Clang-format"></a>Clang-format</h3><p>Clang-format doesn’t really have an integration with CMake, unfortunately. You could make a custom target (See <a href="https://arcanis.me/en/2015/10/17/cppcheck-and-clang-format" target="_blank" rel="noopener">this post</a>, or you can run it manually. An interesting project that I have not really tried is <a href="https://github.com/kbenzie/git-cmake-format" target="_blank" rel="noopener">here</a>; it adds a format target and even makes sure that you can’t commit unformatted files.</p>
+<p>The following two line would do that in a git repository in bash (assuming you have a <code>.clang-format</code> file):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gitbook $ git ls-files -- &apos;*.cpp&apos; &apos;*.h&apos; | xargs clang-format -i -style=file gitbook $ git diff --exit-code --color</span><br></pre></td></tr></table></figure>
+<p>## </p>
+<h2 id="Speed-up-configuring-and-building"><a href="#Speed-up-configuring-and-building" class="headerlink" title="Speed up configuring and building"></a>Speed up configuring and building</h2><h3 id="CCache"><a href="#CCache" class="headerlink" title="CCache"></a>CCache</h3><p>Set the <code>CMAKE_&lt;LANG&gt;_COMPILER_LAUNCHER</code> variable or the <code>&lt;LANG&gt;_COMPILER_LAUNCHER</code> property on a target to use something like CCache to “wrap” the compilation of the target. Support for CCache has been expanding in the latest versions of CMake. </p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">find_program</span>(CCACHE_PROGRAM ccache)</span><br><span class="line"><span class="keyword">if</span>(CCACHE_PROGRAM)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_CXX_COMPILER_LAUNCHER <span class="string">"$&#123;CCACHE_PROGRAM&#125;"</span>)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_CUDA_COMPILER_LAUNCHER <span class="string">"$&#123;CCACHE_PROGRAM&#125;"</span>) <span class="comment"># CMake 3.9+</span></span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="Interprocedural-optimization"><a href="#Interprocedural-optimization" class="headerlink" title="Interprocedural optimization"></a>Interprocedural optimization</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">include(CheckIPOSupported)</span><br><span class="line">check_ipo_supported(RESULT _IsIPOSupported)</span><br><span class="line">  if(_IsIPOSupported)</span><br><span class="line">  message(STATUS &quot;Turn on INTERPROCEDURAL_OPTIMIZATION&quot;)</span><br><span class="line">  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)</span><br><span class="line">  //set_target_properties(foo PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
+<h2 id="Create-docs-with-doxygen"><a href="#Create-docs-with-doxygen" class="headerlink" title="Create docs with doxygen"></a>Create docs with doxygen</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">find_package(Doxygen REQUIRED)</span><br><span class="line"></span><br><span class="line">set(DOXYGEN_GENERATE_HTML YES)</span><br><span class="line">set(DOXYGEN_EXTRACT_ALL YES)</span><br><span class="line">set(DOXYGEN_BUILTIN_STL_SUPPORT YES)</span><br><span class="line"></span><br><span class="line">doxygen_add_docs(doxygen_docs &quot;$&#123;PROJECT_SOURCE_DIR&#125;/src&quot;)</span><br></pre></td></tr></table></figure>
+<h2 id="Antipatterns-and-Patterns"><a href="#Antipatterns-and-Patterns" class="headerlink" title="Antipatterns and Patterns"></a>Antipatterns and Patterns</h2><h3 id="CMake-Antipatterns"><a href="#CMake-Antipatterns" class="headerlink" title="CMake Antipatterns"></a>CMake Antipatterns</h3><ul>
+<li><strong>Do not use global functions</strong>: This includes <code>link_directories</code>, <code>include_libraries</code>, and similar.</li>
+<li><strong>Don’t add unneeded PUBLIC requirements</strong>: You should avoid forcing something on users that is not required (<code>-Wall</code>). Make these PRIVATE instead.</li>
+<li><strong>Don’t GLOB files</strong>: Make or another tool will not know if you add files without rerunning CMake. Note that CMake 3.12 adds a <code>CONFIGURE_DEPENDS</code> flag that makes this far better if you need to use it.</li>
+<li><strong>Link to built files directly</strong>: Always link to targets if available.</li>
+<li><strong>Never skip PUBLIC/PRIVATE when linking</strong>: This causes all future linking to be keyword-less.</li>
+</ul>
+<h3 id="CMake-Patterns"><a href="#CMake-Patterns" class="headerlink" title="CMake Patterns"></a>CMake Patterns</h3><ul>
+<li><strong>Treat CMake as code</strong>: It is code. It should be as clean and readable as all other code.</li>
+<li><strong>Think in targets</strong>: Your targets should represent concepts. Make an (IMPORTED) INTERFACE target for anything that should stay together and link to that.</li>
+<li><strong>Export your interface</strong>: You should be able to run from build or install.</li>
+<li><strong>Write a Config.cmake file</strong>: This is what a library author should do to support clients.</li>
+<li><strong>Make ALIAS targets to keep usage consistent</strong>: Using <code>add_subdirectory</code> and <code>find_package</code> should provide the same targets and namespaces.</li>
+<li><strong>Combine common functionality into clearly documented functions or macros</strong>: Functions are better usually.</li>
+<li><strong>Use lowercase function names</strong>: CMake functions and macros can be called lower or upper case. Always use lower case. Upper case is for variables.</li>
+<li><strong>Use <code>cmake_policy</code> and/or range of versions</strong>: Policies change for a reason. Only piecemeal set OLD policies if you have to.</li>
+</ul>
+<h1 id="More-Modern-CMake"><a href="#More-Modern-CMake" class="headerlink" title="More Modern CMake"></a>More Modern CMake</h1><h2 id="Use-target-sources-to-add-sources-and-header-files"><a href="#Use-target-sources-to-add-sources-and-header-files" class="headerlink" title="Use target_sources to add sources and header files"></a>Use target_sources to add sources and header files</h2><h3 id="Traditional-methods"><a href="#Traditional-methods" class="headerlink" title="Traditional methods"></a>Traditional methods</h3><p>Typically, developers define a target by listing the source files directly in the <code>add_executable()</code> or <code>add_library()</code> command itself. When the number of source files grows large and they get distributed over a number of subdirectories, possibly nested to multiple levels, this quickly becomes unwieldly. It also results in having to repeat the directory structure, which reduces the benefit of structuring source files into directories.</p>
+<p>The logical improvement many developers then make is to build up the list of source files in a variable as each subdirectory is pulled in via <code>include()</code>. Then after all the subdirectories have been included, <code>add_executable()</code> or <code>add_library()</code> is called, but this time passing just the variable instead of an explicit list of files. The top level CMakeLists.txt file then looks something like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># The name of the included file could be anything,</span><br><span class="line"># it doesn&apos;t have to be called CMakeLists.txt</span><br><span class="line">include(foo/CMakeLists.txt)</span><br><span class="line">include(bar/CMakeLists.txt)</span><br><span class="line"></span><br><span class="line">add_executable(myApp $&#123;myApp_SOURCES&#125;)</span><br></pre></td></tr></table></figure>
+<p>with the subdirectory files structured something like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">list(APPEND myApp_SOURCES</span><br><span class="line">    $&#123;CMAKE_CURRENT_LIST_DIR&#125;/foo.cpp</span><br><span class="line">    $&#123;CMAKE_CURRENT_LIST_DIR&#125;/foo_p.cpp</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>This allows each subdirectory to define just the sources it provides and to delegate any further nested subdirectories with another <code>include()</code>. It also keeps the top level CMakeLists.txt file quite small and the CMakeLists.txt in each subdirectory also tends to be reasonably uncomplicated and focussed just on the things in that directory.</p>
+<p>As an alternative to explicitly building up a list of source files in a variable, some developers instead choose to let CMake find the source files and generate the contents of that variable automatically with the <code>file(GLOB_RECURSE ...)</code> command. But this technique has a number of drawbacks and is <a href="https://cmake.org/cmake/help/latest/command/file.html" target="_blank" rel="noopener">actively discouraged by the CMake documentation</a>. </p>
+<h3 id="target-sources"><a href="#target-sources" class="headerlink" title="target_sources()"></a>target_sources()</h3><p>An example should help to highlight why <code>target_sources()</code> leads to much more robust and concise CMakeLists.txt files. </p>
+<p>Let’s say we have a project with two subdirectories <code>foo</code> and <code>bar</code>. The top level CMakeLists.txt file can be as simple as this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.13)</span><br><span class="line">project(MyProj)</span><br><span class="line"></span><br><span class="line">add_library(myLib &quot;&quot;)</span><br><span class="line"></span><br><span class="line">add_subdirectory(foo)</span><br><span class="line">add_subdirectory(bar)</span><br></pre></td></tr></table></figure>
+<p>The CMakeLists.txt file within the <code>foo</code> subdirectory might then look something like this:</p>
+<h4 id="CMake-3-13-0-or-later"><a href="#CMake-3-13-0-or-later" class="headerlink" title="CMake 3.13.0 or later"></a>CMake 3.13.0 or later</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">target_sources(myLib</span><br><span class="line">    PRIVATE</span><br><span class="line">        foo.cpp</span><br><span class="line">        foo_p.cpp</span><br><span class="line">        foo_p.h</span><br><span class="line">    PUBLIC</span><br><span class="line">        foo.h</span><br><span class="line">)</span><br><span class="line">find_library(BARRY_LIB barry)</span><br><span class="line"></span><br><span class="line"># This call requires CMake 3.13 or later</span><br><span class="line">target_link_libraries(myLib PUBLIC $&#123;BARRY_LIB&#125;)</span><br><span class="line"></span><br><span class="line">target_compile_definitions(myLib PUBLIC USE_BARRY)</span><br><span class="line">target_include_directories(myLib PUBLIC $&#123;CMAKE_CURRENT_LIST_DIR&#125;)</span><br></pre></td></tr></table></figure>
+<h4 id="CMake-3-12-And-Earlier"><a href="#CMake-3-12-And-Earlier" class="headerlink" title="CMake 3.12 And Earlier"></a>CMake 3.12 And Earlier</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">target_sources(myLib</span><br><span class="line">    PRIVATE</span><br><span class="line">        $&#123;CMAKE_CURRENT_LIST_DIR&#125;/foo.cpp</span><br><span class="line">        $&#123;CMAKE_CURRENT_LIST_DIR&#125;/foo_p.cpp</span><br><span class="line">        $&#123;CMAKE_CURRENT_LIST_DIR&#125;/foo_p.h</span><br><span class="line">    PUBLIC</span><br><span class="line">        $&#123;CMAKE_CURRENT_LIST_DIR&#125;/foo.h</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>This is less convenient and less readable, so it may be helpful to define a helper function to give something close to the new behavior, but which also works for earlier CMake versions.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># NOTE: This helper function assumes no generator expressions are used</span><br><span class="line">#       for the source files</span><br><span class="line">function(target_sources_local target)</span><br><span class="line">  if(POLICY CMP0076)</span><br><span class="line">    # New behavior is available, so just forward to it by ensuring</span><br><span class="line">    # that we have the policy set to request the new behavior, but</span><br><span class="line">    # don&apos;t change the policy setting for the calling scope</span><br><span class="line">    cmake_policy(PUSH)</span><br><span class="line">    cmake_policy(SET CMP0076 NEW)</span><br><span class="line">    target_sources($&#123;target&#125; $&#123;ARGN&#125;)</span><br><span class="line">    cmake_policy(POP)</span><br><span class="line">    return()</span><br><span class="line">  endif()</span><br><span class="line"></span><br><span class="line">  # Must be using CMake 3.12 or earlier, so simulate the new behavior</span><br><span class="line">  unset(_srcList)</span><br><span class="line">  get_target_property(_targetSourceDir $&#123;target&#125; SOURCE_DIR)</span><br><span class="line"></span><br><span class="line">  foreach(src $&#123;ARGN&#125;)</span><br><span class="line">    if(NOT src STREQUAL &quot;PRIVATE&quot; AND</span><br><span class="line">       NOT src STREQUAL &quot;PUBLIC&quot; AND</span><br><span class="line">       NOT src STREQUAL &quot;INTERFACE&quot; AND</span><br><span class="line">       NOT IS_ABSOLUTE &quot;$&#123;src&#125;&quot;)</span><br><span class="line">      # Relative path to source, prepend relative to where target was defined</span><br><span class="line">      file(RELATIVE_PATH src &quot;$&#123;_targetSourceDir&#125;&quot; &quot;$&#123;CMAKE_CURRENT_LIST_DIR&#125;/$&#123;src&#125;&quot;)</span><br><span class="line">    endif()</span><br><span class="line">    list(APPEND _srcList $&#123;src&#125;)</span><br><span class="line">  endforeach()</span><br><span class="line">  target_sources($&#123;target&#125; $&#123;_srcList&#125;)</span><br><span class="line">endfunction()</span><br></pre></td></tr></table></figure>
+<p>Now we can call the above helper function just like the builtin command and get the CMake 3.13 behavior even with CMake 3.12 or earlier:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">target_sources_local(myLib</span><br><span class="line">    PRIVATE</span><br><span class="line">        foo.cpp</span><br><span class="line">        foo_p.cpp</span><br><span class="line">        foo_p.h</span><br><span class="line">    PUBLIC</span><br><span class="line">        foo.h</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>When using CMake 3.12 or earlier, working around the restriction with <code>target_link_libraries()</code> is harder. The choices are either to move the <code>target_link_libraries()</code> call up to the same directory in which the target is defined, or avoid creating new directory scopes by using <code>include()</code> instead of <code>add_subdirectory()</code>. The second of these options would only require changing the top level CMakeLists.txt file to something like the following:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.1)</span><br><span class="line">project(MyProj)</span><br><span class="line"></span><br><span class="line">add_library(myLib &quot;&quot;)</span><br><span class="line"></span><br><span class="line"># Using include() avoids creating a new directory scope, so these directories</span><br><span class="line"># are able to call target_link_libraries(myLib ...)</span><br><span class="line">include(foo/CMakeLists.txt)</span><br><span class="line">include(bar/CMakeLists.txt)</span><br></pre></td></tr></table></figure>
+<p>The <code>target_sources_local()</code> helper function is defined in such a way that it will work inside <code>foo</code> or any other directory, regardless of whether we use <code>add_subdirectory()</code> or <code>include()</code>. </p>
+<p>Specifying <code>PRIVATE</code> sources is relatively easy and has few difficulties. The location of each source file is clear and only needs to be considered within the build. Any <code>PUBLIC</code> or <code>INTERFACE</code> sources give rise to additional factors which must be considered. Within the build, paths to non-private sources are handled just like private ones, but when the project is installed, non-private paths have to make sense not only in the project’s own build, but also in the build of anything consuming the installed project. Projects should weigh up the loss of convenience and added complexity against the expected benefits to be gained by making sources non-private.</p>
+<h2 id="Object-Libraries"><a href="#Object-Libraries" class="headerlink" title="Object Libraries"></a>Object Libraries</h2><p>Object Libraries carry <strong>usage-requirements</strong> (include-search-path (./headers), preprocessor-definition (IS_EXAMPLE=1)) and <strong>object files</strong>(generated from its private sources).</p>
+<div style="width:100%;margin:auto"><img src="/2020/11/15/Practices/target_sources1.png"></div>
+
+<div style="width:100%;margin:auto"><img src="/2020/11/15/Practices/target_sources2.png"></div>
+
+<div style="width:100%;margin:auto"><img src="/2020/11/15/Practices/target_sources3.png"></div>
+
+<h1 id="These-References-Are-Awesome"><a href="#These-References-Are-Awesome" class="headerlink" title="These References Are Awesome!"></a>These References Are Awesome!</h1><p>Most of the contents in this post are from the following posts. They’ve helped me out along the whole learning. Check them for more details!</p>
+<p><a href="https://blog.xizhibei.me/tags/C-C/" target="_blank" rel="noopener">CMake 系列</a></p>
+<p><a href="https://hedzr.github.io/categories/#cmake" target="_blank" rel="noopener">CMake Notes</a></p>
+<p><a href="https://cliutils.gitlab.io/modern-cmake/" target="_blank" rel="noopener">Modern CMake</a></p>
+<p><a href="https://gist.github.com/mbinna/c61dbb39bca0e4fb7d1f73b0d66a4fd1" target="_blank" rel="noopener">Effective Modern CMake</a></p>
+<p><a href="https://pabloariasal.github.io/2018/02/19/its-time-to-do-cmake-right/" target="_blank" rel="noopener">Pablo Atias, It’s Time To Do CMake Right, Feb 19, 2018</a></p>
+<p><a href="https://crascit.com/2016/01/31/enhanced-source-file-handling-with-target_sources/" target="_blank" rel="noopener">Craig Scott, Enhanced source file handling with target_sources(), Jan 31, 2016</a></p>
+<p><a href="https://www.youtube.com/watch?v=rLopVhns4Zs&amp;list=WL&amp;index=13&amp;t=2222s" target="_blank" rel="noopener">Daniel Pfeifer, “Effective CMake”, June 22, 2017</a></p>
+<p><a href="https://www.youtube.com/watch?v=y9kSr5enrSk&amp;list=WL&amp;index=14&amp;t=3079s" target="_blank" rel="noopener">Oh No! More Modern CMake - Deniz Bahadir - Meeting C++ 2019</a></p>
+<p><a href="http://www.steveire.com/embracing-modern-cmake.pdf" target="_blank" rel="noopener">Stephen Kelly, Embracing Modern CMake-How to recognize and use modern CMake Intercaces, Sept 11, 2017</a> </p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tech/" rel="tag"># tech</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/07/Cross-Compile/" rel="next" title="💻 Compile FFMPEG For Raspberry Pi 4">
+                <i class="fa fa-chevron-left"></i> 💻 Compile FFMPEG For Raspberry Pi 4
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/12/07/Books-2020-md/" rel="prev" title="📖 Books of 2020">
+                📖 Books of 2020 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/yoda-hiding.png"
+                alt="ShaolingC" />
+            
+              <p class="site-author-name" itemprop="name">ShaolingC</p>
+              <p class="site-description motion-element" itemprop="description">✨✨✨</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/Sherlynchan" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:sc6995@nyu.edu" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.linkedin.com/in/shaoling-chen-420591b2/" target="_blank" title="LinkedIn"><i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.instagram.com/cinnamon_bear_and_/" target="_blank" title="Instagram"><i class="fa fa-fw fa-instagram"></i>Instagram</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#What’s-CMake"><span class="nav-number">1.</span> <span class="nav-text">What’s CMake?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMake-V-S-Modern-CMake"><span class="nav-number">2.</span> <span class="nav-text">CMake V.S. Modern CMake</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Targets-and-Properties"><span class="nav-number">2.1.</span> <span class="nav-text">Targets and Properties</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Targets"><span class="nav-number">2.1.1.</span> <span class="nav-text">Targets</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Shared-Libraries-V-S-Static-Libraries"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">Shared Libraries V.S. Static Libraries</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Static-Libraries"><span class="nav-number">2.1.1.1.1.</span> <span class="nav-text">Static Libraries</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Shared-Libraries"><span class="nav-number">2.1.1.1.2.</span> <span class="nav-text">Shared Libraries</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Properties"><span class="nav-number">2.1.2.</span> <span class="nav-text">Properties</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Modern-CMake"><span class="nav-number">3.</span> <span class="nav-text">Modern CMake</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Basic-Usage-Template"><span class="nav-number">3.1.</span> <span class="nav-text">Basic Usage Template</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adding-Features"><span class="nav-number">3.2.</span> <span class="nav-text">Adding Features</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Position-independent-code"><span class="nav-number">3.2.1.</span> <span class="nav-text">Position independent code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Useful-Modules"><span class="nav-number">3.3.</span> <span class="nav-text">Useful Modules</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CMakeDependentOption"><span class="nav-number">3.3.1.</span> <span class="nav-text">CMakeDependentOption</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMakePrintHelpers"><span class="nav-number">3.3.2.</span> <span class="nav-text">CMakePrintHelpers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CheckCXXCompilerFlag"><span class="nav-number">3.3.3.</span> <span class="nav-text">CheckCXXCompilerFlag</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WriteCompilerDetectionHeader"><span class="nav-number">3.3.4.</span> <span class="nav-text">WriteCompilerDetectionHeader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#try-compile-try-run"><span class="nav-number">3.3.5.</span> <span class="nav-text">try_compile/try_run</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FeatureSummary"><span class="nav-number">3.3.6.</span> <span class="nav-text">FeatureSummary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Including-Projects"><span class="nav-number">3.4.</span> <span class="nav-text">Including Projects</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Git-Submodule-Method"><span class="nav-number">3.4.1.</span> <span class="nav-text">Git Submodule Method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ExternalProject"><span class="nav-number">3.4.2.</span> <span class="nav-text">ExternalProject</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#vcpkg"><span class="nav-number">3.4.2.1.</span> <span class="nav-text">vcpkg</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DownloadProject"><span class="nav-number">3.4.3.</span> <span class="nav-text">DownloadProject</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FetchContent-CMake-3-11-："><span class="nav-number">3.4.4.</span> <span class="nav-text">FetchContent  (CMake 3.11+)：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Export-targets-and-find-package"><span class="nav-number">3.5.</span> <span class="nav-text">Export targets and find_package()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Defining-a-library"><span class="nav-number">3.5.1.</span> <span class="nav-text">Defining a library</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Include-Directories"><span class="nav-number">3.5.2.</span> <span class="nav-text">Include Directories</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMake-config-setup"><span class="nav-number">3.5.3.</span> <span class="nav-text">CMake config setup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consuming-CMake-config-modules"><span class="nav-number">3.5.4.</span> <span class="nav-text">Consuming CMake config modules</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Traditional-Library-pkg-config-configuration-Solution"><span class="nav-number">3.5.5.</span> <span class="nav-text">Traditional Library pkg-config configuration Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Defining-a-library-1"><span class="nav-number">3.5.5.1.</span> <span class="nav-text">Defining a library</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pkg-config-setup"><span class="nav-number">3.5.5.2.</span> <span class="nav-text">Pkg-config setup</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Consuming-libraries"><span class="nav-number">3.5.5.3.</span> <span class="nav-text">Consuming libraries</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Utilities"><span class="nav-number">3.6.</span> <span class="nav-text">Utilities</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Clang-tidy"><span class="nav-number">3.6.1.</span> <span class="nav-text">Clang tidy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Include-what-you-use"><span class="nav-number">3.6.2.</span> <span class="nav-text">Include what you use</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Link-what-you-use"><span class="nav-number">3.6.3.</span> <span class="nav-text">Link what you use</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Clang-format"><span class="nav-number">3.6.4.</span> <span class="nav-text">Clang-format</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Speed-up-configuring-and-building"><span class="nav-number">3.7.</span> <span class="nav-text">Speed up configuring and building</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CCache"><span class="nav-number">3.7.1.</span> <span class="nav-text">CCache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Interprocedural-optimization"><span class="nav-number">3.7.2.</span> <span class="nav-text">Interprocedural optimization</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Create-docs-with-doxygen"><span class="nav-number">3.8.</span> <span class="nav-text">Create docs with doxygen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Antipatterns-and-Patterns"><span class="nav-number">3.9.</span> <span class="nav-text">Antipatterns and Patterns</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CMake-Antipatterns"><span class="nav-number">3.9.1.</span> <span class="nav-text">CMake Antipatterns</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMake-Patterns"><span class="nav-number">3.9.2.</span> <span class="nav-text">CMake Patterns</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#More-Modern-CMake"><span class="nav-number">4.</span> <span class="nav-text">More Modern CMake</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-target-sources-to-add-sources-and-header-files"><span class="nav-number">4.1.</span> <span class="nav-text">Use target_sources to add sources and header files</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Traditional-methods"><span class="nav-number">4.1.1.</span> <span class="nav-text">Traditional methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#target-sources"><span class="nav-number">4.1.2.</span> <span class="nav-text">target_sources()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CMake-3-13-0-or-later"><span class="nav-number">4.1.2.1.</span> <span class="nav-text">CMake 3.13.0 or later</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CMake-3-12-And-Earlier"><span class="nav-number">4.1.2.2.</span> <span class="nav-text">CMake 3.12 And Earlier</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-Libraries"><span class="nav-number">4.2.</span> <span class="nav-text">Object Libraries</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#These-References-Are-Awesome"><span class="nav-number">5.</span> <span class="nav-text">These References Are Awesome!</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ShaolingC</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.4.0</div>
+
+
+
+
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_uv"> Total  <span id="busuanzi_value_site_uv"></span>  Visitors  </span>
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
