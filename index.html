@@ -699,7 +699,7 @@ and the result is not just bad, it is ghastly.
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-12-31 13:00:28" itemprop="dateModified" datetime="2020-12-31T13:00:28-08:00">2020-12-31</time>
+                <time title="Modified: 2021-01-03 13:10:12" itemprop="dateModified" datetime="2021-01-03T13:10:12-08:00">2021-01-03</time>
               
             
           </span>
@@ -949,7 +949,61 @@ and the result is not just bad, it is ghastly.
 <h3 id="Clang-format"><a href="#Clang-format" class="headerlink" title="Clang-format"></a>Clang-format</h3><p>Clang-format doesn’t really have an integration with CMake, unfortunately. You could make a custom target (See <a href="https://arcanis.me/en/2015/10/17/cppcheck-and-clang-format" target="_blank" rel="noopener">this post</a>, or you can run it manually. An interesting project that I have not really tried is <a href="https://github.com/kbenzie/git-cmake-format" target="_blank" rel="noopener">here</a>; it adds a format target and even makes sure that you can’t commit unformatted files.</p>
 <p>The following two line would do that in a git repository in bash (assuming you have a <code>.clang-format</code> file):</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gitbook $ git ls-files -- &apos;*.cpp&apos; &apos;*.h&apos; | xargs clang-format -i -style=file gitbook $ git diff --exit-code --color</span><br></pre></td></tr></table></figure>
-<p>## </p>
+<h2 id="Symbol-Visibility"><a href="#Symbol-Visibility" class="headerlink" title="Symbol Visibility"></a>Symbol Visibility</h2><p>Why should we do symbol hiding and explicit symbol exposure for our libraries in general?</p>
+<p>This will make your shared object smaller, so it will also load/import slightly faster. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># for GCC, ICC &amp; clang just do the following in cmakelists.txt</span><br><span class="line"># then the symbol hiding will happen in link time</span><br><span class="line">target_compile_options(MyLib PRIVATE</span><br><span class="line">  -fvisibility=hidden</span><br><span class="line">  -fvisibility-inlines-hidden)</span><br><span class="line"># for MSVC, it performs symbol hiding by default</span><br></pre></td></tr></table></figure>
+<p>How do we explicitly expose symbols if everything is -fvisibility=hidden by default?</p>
+<p>Ususally it’s  <code>class VISIBILITY_MACRO foo{}</code> The following is a list of VISIBILITY_MACRO.</p>
+<table>
+<thead>
+<tr>
+<th>compiler</th>
+<th>attribute</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>g++</td>
+<td><code>__attribute__((visibility(&quot;default&quot;)))</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clang++</td>
+<td><code>__attribute__((visibility(&quot;default&quot;)))</code></td>
+<td></td>
+</tr>
+<tr>
+<td>icpc</td>
+<td><code>__attribute__((visibility(&quot;default&quot;)))</code></td>
+<td></td>
+</tr>
+<tr>
+<td>pgc++</td>
+<td>unsupported</td>
+<td></td>
+</tr>
+<tr>
+<td>nvcc</td>
+<td>unsported as of 10.2.89</td>
+<td>Nvidia RFE 2767433</td>
+</tr>
+<tr>
+<td>xlc++</td>
+<td><code>__attribute__((visibility(&quot;default&quot;)))</code></td>
+<td></td>
+</tr>
+<tr>
+<td>msvc</td>
+<td><code>__declspec__(dllexport)</code></td>
+<td>symbols hidden by default</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Check-visibility"><a href="#Check-visibility" class="headerlink" title="Check visibility"></a>Check visibility</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nm -C &lt;shared_object&gt; | grep &lt;symbol_name&gt;</span><br><span class="line">#and</span><br><span class="line">nm -CD &lt;shared_object&gt; | grep &lt;symbol_name&gt;</span><br></pre></td></tr></table></figure>
+<p>If the symbol does not exist at all it won’t be anywhere.</p>
+<p>If the symbol appears only in the first output, it’s hidden.</p>
+<p>If the symbol appears in both outputs, it’s exposed.</p>
 <h2 id="Speed-up-configuring-and-building"><a href="#Speed-up-configuring-and-building" class="headerlink" title="Speed up configuring and building"></a>Speed up configuring and building</h2><h3 id="CCache"><a href="#CCache" class="headerlink" title="CCache"></a>CCache</h3><p>Set the <code>CMAKE_&lt;LANG&gt;_COMPILER_LAUNCHER</code> variable or the <code>&lt;LANG&gt;_COMPILER_LAUNCHER</code> property on a target to use something like CCache to “wrap” the compilation of the target. Support for CCache has been expanding in the latest versions of CMake. </p>
 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">find_program</span>(CCACHE_PROGRAM ccache)</span><br><span class="line"><span class="keyword">if</span>(CCACHE_PROGRAM)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_CXX_COMPILER_LAUNCHER <span class="string">"$&#123;CCACHE_PROGRAM&#125;"</span>)</span><br><span class="line">    <span class="keyword">set</span>(CMAKE_CUDA_COMPILER_LAUNCHER <span class="string">"$&#123;CCACHE_PROGRAM&#125;"</span>) <span class="comment"># CMake 3.9+</span></span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
 <h3 id="Interprocedural-optimization"><a href="#Interprocedural-optimization" class="headerlink" title="Interprocedural optimization"></a>Interprocedural optimization</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">include(CheckIPOSupported)</span><br><span class="line">check_ipo_supported(RESULT _IsIPOSupported)</span><br><span class="line">  if(_IsIPOSupported)</span><br><span class="line">  message(STATUS &quot;Turn on INTERPROCEDURAL_OPTIMIZATION&quot;)</span><br><span class="line">  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)</span><br><span class="line">  //set_target_properties(foo PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure>
@@ -2031,7 +2085,7 @@ and the result is not just bad, it is ghastly.
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
